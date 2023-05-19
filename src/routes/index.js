@@ -6,6 +6,11 @@ const {
   getAllExpenses,
 } = require("../controllers/expenseController");
 
+const {
+  removeUser,
+  removeExpenses,
+} = require("../controllers/purgeController");
+
 const developers = [
   {
     firstname: "Elad",
@@ -26,5 +31,6 @@ router.get("/report", getAllExpenses);
 router.get("/about", (req, res) => {
   res.json(developers);
 });
-
+router.post("/purge-user", removeUser);
+router.post("/purge-expenses", removeExpenses);
 module.exports = router;

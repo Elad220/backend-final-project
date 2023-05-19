@@ -2,6 +2,7 @@
 const mongoose = require("mongoose");
 
 const costSchema = new mongoose.Schema({
+  id: String,
   user_id: Number,
   year: Number,
   month: Number,
