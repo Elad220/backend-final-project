@@ -6,7 +6,7 @@ function isValidDate(year, month, day) {
   if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
     daysInMonth[1] = 29;
   }
-
+  // Check if the date is valid
   if (month < 1 || month > 12 || day < 1 || day > daysInMonth[month - 1]) {
     return false;
   }

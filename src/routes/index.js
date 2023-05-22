@@ -4,13 +4,14 @@ const router = express.Router();
 const {
   addExpense,
   getAllExpenses,
-} = require("../controllers/expenseController");
+} = require("../controllers/expense-controller");
 
 const {
   removeUser,
   removeExpenses,
-} = require("../controllers/purgeController");
+} = require("../controllers/purge-controller");
 
+// Define the developers array
 const developers = [
   {
     firstname: "Elad",
@@ -26,6 +27,7 @@ const developers = [
   },
 ];
 
+// setup the routes for the app
 router.post("/addcost", addExpense);
 router.get("/report", getAllExpenses);
 router.get("/about", (req, res) => {

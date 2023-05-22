@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-// define the schema for users collection
+// Define the schema for users collection
 const userSchema = new mongoose.Schema({
   id: Number,
   first_name: String,
@@ -8,6 +8,6 @@ const userSchema = new mongoose.Schema({
   birthday: String,
 });
 
-// define the models for users and costs collections
+// Define the models for users collection
 const User = mongoose.model("User", userSchema);
 module.exports = User;

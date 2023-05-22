@@ -1,6 +1,7 @@
-const User = require("../models/userModel");
-const Cost = require("../models/expenseModel");
+const User = require("../models/user-model");
+const Cost = require("../models/expense-model");
 
+// remove all users from the database
 const removeUser = async (req, res) => {
   try {
     await User.deleteMany({});
@@ -9,10 +10,15 @@ const removeUser = async (req, res) => {
       message: "All users have been deleted successfully",
     });
   } catch (err) {
-    console.log(err);
+    res.status(500).json({
+      status: "error",
+      message: "An error occurred while deleting users",
+      error: err.message,
+    });
   }
 };
 
+// remove all expenses from the database
 const removeExpenses = async (req, res) => {
   try {
     await Cost.deleteMany({});
@@ -21,7 +27,11 @@ const removeExpenses = async (req, res) => {
       message: "All expenses have been deleted successfully",
     });
   } catch (err) {
-    console.log(err);
+    res.status(500).json({
+      status: "error",
+      message: "An error occurred while deleting expenses",
+      error: err.message,
+    });
   }
 };
 
