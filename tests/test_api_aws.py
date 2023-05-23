@@ -1,12 +1,13 @@
 import pytest
 import requests
+import os
 
 # Base URL of your API
-BASE_URL = "http://localhost:3000"
+BASE_URL = os.environ.get("AWS_BASE_URL")
 id = "placeholder"
 # Test data for expense
 expense_data = {
-    "user_id": 123123,
+    "user_id": 111111,
     "year": 2023,
     "month": 5,
     "day": 12,
@@ -35,7 +36,8 @@ def setup_teardown():
 
     # Teardown
     global id
-    response = requests.get(f"{BASE_URL}/report-id?user_id=123123&year=2023&month=5")
+    url = f"{BASE_URL}/report-id?user_id={user_data['id']}&year={expense_data['year']}&month={expense_data['month']}"
+    response = requests.get(url)
     assert response.status_code == 200
     response = requests.delete(f"{BASE_URL}/removecost", json={"id": id})
     assert response.status_code == 200
