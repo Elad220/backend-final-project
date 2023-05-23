@@ -4,7 +4,7 @@ const User = require("../models/user-model");
 const isValidUser = async (user_id, res) => {
   const user = await User.findOne({ id: user_id });
   if (!user) {
-    res.status(404).json({
+    res.status(400).json({
       status: "fail",
       message: "User not found",
     });

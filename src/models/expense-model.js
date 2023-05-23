@@ -43,5 +43,6 @@ const costSchema = new mongoose.Schema({
 
 // Define the model for costs collection
 const Cost = mongoose.model("Cost", costSchema);
+Cost.createIndexes();
 
 module.exports = Cost;

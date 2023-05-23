@@ -4,10 +4,14 @@ const router = express.Router();
 const {
   addExpense,
   getAllExpenses,
+  getAllExpensesWithId,
+  removeExpense,
+  createUser,
+  removeUser,
 } = require("../controllers/expense-controller");
 
 const {
-  removeUser,
+  removeUsers,
   removeExpenses,
 } = require("../controllers/purge-controller");
 
@@ -28,11 +32,15 @@ const developers = [
 ];
 
 // setup the routes for the app
-router.post("/addcost", addExpense);
 router.get("/report", getAllExpenses);
+router.get("/report-id", getAllExpensesWithId);
+router.post("/addcost", addExpense);
+router.post("/adduser", createUser);
 router.get("/about", (req, res) => {
   res.json(developers);
 });
-router.post("/purge-user", removeUser);
-router.post("/purge-expenses", removeExpenses);
+router.delete("/removeuser", removeUser);
+router.delete("/removecost", removeExpense);
+router.delete("/purge-user", removeUsers);
+router.delete("/purge-expenses", removeExpenses);
 module.exports = router;

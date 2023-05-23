@@ -2,7 +2,7 @@ const User = require("../models/user-model");
 const Cost = require("../models/expense-model");
 
 // remove all users from the database
-const removeUser = async (req, res) => {
+const removeUsers = async (req, res) => {
   try {
     await User.deleteMany({});
     res.status(200).json({
@@ -35,4 +35,4 @@ const removeExpenses = async (req, res) => {
   }
 };
 
-module.exports = { removeUser, removeExpenses };
+module.exports = { removeUsers, removeExpenses };
