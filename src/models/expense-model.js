@@ -1,10 +1,11 @@
 const mongoose = require("mongoose");
+const getNextSequenceValue = require("../utils/auto-increment");
 
 // Define the schema for costs collection
 const costSchema = new mongoose.Schema({
   id: {
-    type: String,
-    required: [true, "Cost must have an id"],
+    type: Number,
+    unique: true,
   },
   user_id: {
     type: Number,
@@ -39,6 +40,13 @@ const costSchema = new mongoose.Schema({
     ],
   },
   sum: { type: Number, required: [true, "Cost must have a sum"] },
+});
+
+costSchema.pre("save", async function (next) {
+  if (!this.id) {
+    this.id = await getNextSequenceValue("Cost", "id");
+  }
+  next();
 });
 
 // Define the model for costs collection

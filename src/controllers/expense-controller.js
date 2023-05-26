@@ -2,7 +2,6 @@ const Expense = require("../models/expense-model");
 const User = require("../models/user-model");
 const isValidDate = require("../utils/is-valid-date");
 const isValidUser = require("../utils/is-valid-user");
-const crypto = require("crypto");
 
 const validCategories = [
   "food",
@@ -56,13 +55,9 @@ const addExpense = async (req, res) => {
     return;
   }
 
-  // Generating a random id for the new expense
-  const expense_id = crypto.randomBytes(8).toString("hex");
-
   try {
     // Create expense
     const expense = await Expense.create({
-      id: expense_id,
       user_id,
       year,
       month,
@@ -92,6 +87,7 @@ const addExpense = async (req, res) => {
       );
     }
   } catch (error) {
+    console.log(error);
     sendErrorResponse(res, 500, "error", "Internal server error");
   }
 };
