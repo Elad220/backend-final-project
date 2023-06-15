@@ -13,6 +13,7 @@ const {
 const {
   removeUsers,
   removeExpenses,
+  removeReports,
 } = require("../controllers/purge-controller");
 
 // Define the developers array
@@ -43,4 +44,5 @@ router.delete("/removeuser", removeUser);
 router.delete("/removecost", removeExpense);
 router.delete("/purge-user", removeUsers);
 router.delete("/purge-expenses", removeExpenses);
+router.delete("/purge-reports", removeReports);
 module.exports = router;

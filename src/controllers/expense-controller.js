@@ -2,6 +2,7 @@ const Expense = require("../models/expense-model");
 const User = require("../models/user-model");
 const isValidDate = require("../utils/is-valid-date");
 const isValidUser = require("../utils/is-valid-user");
+const getOrCreateReport = require("../utils/get-or-create-report");
 
 const validCategories = [
   "food",
@@ -124,31 +125,14 @@ const getAllExpenses = async (req, res) => {
   }
 
   try {
-    // Find the documents in MongoDB
-    const expenses = await Expense.find({ month, year, user_id });
-
-    // Check if there are any expenses for the specified user
-    if (expenses.length === 0) {
-      sendErrorResponse(
-        res,
-        404,
-        "fail",
-        "There are no expenses for the specified user."
-      );
-      return;
-    }
-    const report = validCategories.reduce(
-      (acc, category) => ({ ...acc, [category]: [] }),
-      {}
+    const report = await getOrCreateReport(
+      user_id,
+      year,
+      month,
+      validCategories
     );
 
-    // Format the returned document
-    expenses.forEach((expense) => {
-      const { day, description, sum, category } = expense;
-      report[category].push({ day, description, sum });
-    });
-
-    res.status(200).json(report);
+    res.status(200).json(report.data);
   } catch (error) {
     sendErrorResponse(res, 500, "error", "Internal server error");
   }
@@ -199,6 +183,7 @@ const getAllExpensesWithId = async (req, res) => {
       );
       return;
     }
+
     const report = validCategories.reduce(
       (acc, category) => ({ ...acc, [category]: [] }),
       {}
