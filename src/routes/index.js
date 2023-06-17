@@ -8,6 +8,7 @@ const {
   removeExpense,
   createUser,
   removeUser,
+  removeReport,
 } = require("../controllers/expense-controller");
 
 const {
@@ -41,6 +42,7 @@ router.get("/about", (req, res) => {
   res.json(developers);
 });
 router.delete("/removeuser", removeUser);
+router.delete("/removereport", removeReport);
 router.delete("/removecost", removeExpense);
 router.delete("/purge-user", removeUsers);
 router.delete("/purge-expenses", removeExpenses);

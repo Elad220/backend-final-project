@@ -1,5 +1,6 @@
 const Expense = require("../models/expense-model");
 const User = require("../models/user-model");
+const Report = require("../models/report-model");
 const isValidDate = require("../utils/is-valid-date");
 const isValidUser = require("../utils/is-valid-user");
 const getOrCreateReport = require("../utils/get-or-create-report");
@@ -69,6 +70,9 @@ const addExpense = async (req, res) => {
     });
 
     if (expense) {
+      // Delete the corresponding report
+      await Report.deleteOne({ user_id, year, month });
+
       res.status(201).json({
         id: expense.id,
         user_id: expense.user_id,
@@ -263,6 +267,39 @@ const createUser = async (req, res) => {
   }
 };
 
+const removeReport = async (req, res) => {
+  const { user_id, year, month } = req.body;
+  if (!user_id || !year || !month) {
+    sendErrorResponse(
+      res,
+      400,
+      "fail",
+      "Please provide all the required parameters"
+    );
+    return;
+  }
+  try {
+    const report = await Report.findOne({ user_id, year, month });
+    if (!report) {
+      sendErrorResponse(
+        res,
+        404,
+        "fail",
+        "There is no report with the specified parameters."
+      );
+      return;
+    } else {
+      await Report.deleteOne({ user_id, year, month });
+      res.status(200).json({
+        status: "success",
+        message: `Report for ${user_id} at month ${month} and year ${year} deleted successfully`,
+      });
+    }
+  } catch (error) {
+    sendErrorResponse(res, 500, "error", "Internal server error");
+  }
+};
+
 const removeUser = async (req, res) => {
   const { id } = req.body;
   if (!id) {
@@ -302,4 +339,5 @@ module.exports = {
   removeExpense,
   createUser,
   removeUser,
+  removeReport,
 };
