@@ -43,6 +43,15 @@ def setup_teardown():
     assert response.status_code == 200
     response = requests.delete(f"{BASE_URL}/removeuser", json={"id": user_data["id"]})
     assert response.status_code == 200
+    response = requests.delete(
+        f"{BASE_URL}/removereport",
+        json={
+            "user_id": user_data["id"],
+            "year": expense_data["year"],
+            "month": expense_data["month"],
+        },
+    )
+    assert response.status_code == 200
 
 
 def test_add_expense():
