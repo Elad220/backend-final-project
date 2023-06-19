@@ -129,3 +129,8 @@ def test_invalid_date():
     expense_data["day"] = 32
     response = requests.post(f"{BASE_URL}/addcost", json=expense_data)
     assert response.status_code == 400
+
+
+def test_about_route():
+    response = requests.get(f"{BASE_URL}/about")
+    assert response.status_code == 200
