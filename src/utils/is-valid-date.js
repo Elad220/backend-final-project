@@ -3,7 +3,7 @@ function isValidDate(year, month, day) {
   const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
   // Leap years
-  if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
+  if (year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0)) {
     daysInMonth[1] = 29;
   }
   // Check if the date is valid

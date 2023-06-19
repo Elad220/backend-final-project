@@ -1,7 +1,7 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const connectDb = require("./utils/connect-db");
-const createUser = require("./utils/create-user");
+const express = require('express');
+const dotenv = require('dotenv');
+const connectDb = require('./utils/connect-db');
+const createUser = require('./utils/create-user');
 
 // load environment variables
 dotenv.config();
@@ -18,7 +18,7 @@ connectDb();
 createUser();
 
 // setup the routes for the app
-app.use("/", require("./routes/index"));
+app.use('/', require('./routes/index'));
 
 // start the server
 app.listen(port, () => console.log(`Server listening on port ${port}`));

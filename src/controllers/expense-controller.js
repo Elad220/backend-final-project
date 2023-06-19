@@ -1,18 +1,18 @@
-const Expense = require("../models/expense-model");
-const User = require("../models/user-model");
-const Report = require("../models/report-model");
-const isValidDate = require("../utils/is-valid-date");
-const isValidUser = require("../utils/is-valid-user");
-const getOrCreateReport = require("../utils/get-or-create-report");
+const Expense = require('../models/expense-model');
+const User = require('../models/user-model');
+const Report = require('../models/report-model');
+const isValidDate = require('../utils/is-valid-date');
+const isValidUser = require('../utils/is-valid-user');
+const getOrCreateReport = require('../utils/get-or-create-report');
 
 const validCategories = [
-  "food",
-  "health",
-  "housing",
-  "sport",
-  "education",
-  "transportation",
-  "other",
+  'food',
+  'health',
+  'housing',
+  'sport',
+  'education',
+  'transportation',
+  'other'
 ];
 
 // Helper function to send error responses
@@ -22,15 +22,23 @@ const sendErrorResponse = (res, statusCode, status, message) => {
 
 // Add a new expense
 const addExpense = async (req, res) => {
-  const { sum, category, day, month, year, description, user_id } = req.body;
+  const {
+    sum,
+    category,
+    day,
+    month,
+    year,
+    description,
+    user_id: userId
+  } = req.body;
 
   // Parameters validation
   if (!sum || !category || !month || !year || !day || !description) {
     sendErrorResponse(
       res,
       400,
-      "fail",
-      "Please provide all the required fields"
+      'fail',
+      'Please provide all the required fields'
     );
     return;
   }
@@ -40,38 +48,38 @@ const addExpense = async (req, res) => {
     sendErrorResponse(
       res,
       400,
-      "fail",
-      "Invalid date given, please provide a valid date"
+      'fail',
+      'Invalid date given, please provide a valid date'
     );
     return;
   }
 
   // Check if the user exists
-  if (!(await isValidUser(user_id, res))) {
+  if (!(await isValidUser(userId, res))) {
     return;
   }
 
   // Check if the category is valid
   if (!validCategories.includes(category)) {
-    sendErrorResponse(res, 400, "fail", "Invalid category provided");
+    sendErrorResponse(res, 400, 'fail', 'Invalid category provided');
     return;
   }
 
   try {
     // Create expense
     const expense = await Expense.create({
-      user_id,
+      user_id: userId,
       year,
       month,
       day,
       description,
       category,
-      sum,
+      sum
     });
 
     if (expense) {
       // Delete the corresponding report
-      await Report.deleteOne({ user_id, year, month });
+      await Report.deleteOne({ user_id: userId, year, month });
 
       res.status(201).json({
         id: expense.id,
@@ -81,33 +89,33 @@ const addExpense = async (req, res) => {
         day: expense.day,
         description: expense.description,
         category: expense.category,
-        sum: expense.sum,
+        sum: expense.sum
       });
     } else {
       sendErrorResponse(
         res,
         400,
-        "fail",
-        "Could not create expense, please try again later"
+        'fail',
+        'Could not create expense, please try again later'
       );
     }
   } catch (error) {
     console.log(error);
-    sendErrorResponse(res, 500, "error", "Internal server error");
+    sendErrorResponse(res, 500, 'error', 'Internal server error');
   }
 };
 
 // Get all expenses for a given user
 const getAllExpenses = async (req, res) => {
-  const { user_id, year, month } = req.query;
+  const { user_id: userId, year, month } = req.query;
 
   // Parameters validation
-  if (!month || !year || !user_id) {
+  if (!month || !year || !userId) {
     sendErrorResponse(
       res,
       400,
-      "fail",
-      "Please provide all the required parameters"
+      'fail',
+      'Please provide all the required parameters'
     );
     return;
   }
@@ -117,20 +125,20 @@ const getAllExpenses = async (req, res) => {
     sendErrorResponse(
       res,
       400,
-      "fail",
-      "Invalid date given, please provide a valid date"
+      'fail',
+      'Invalid date given, please provide a valid date'
     );
     return;
   }
 
   // Check if the user exists
-  if (!(await isValidUser(user_id, res))) {
+  if (!(await isValidUser(userId, res))) {
     return;
   }
 
   try {
     const report = await getOrCreateReport(
-      user_id,
+      userId,
       year,
       month,
       validCategories
@@ -138,21 +146,21 @@ const getAllExpenses = async (req, res) => {
 
     res.status(200).json(report.data);
   } catch (error) {
-    sendErrorResponse(res, 500, "error", "Internal server error");
+    sendErrorResponse(res, 500, 'error', 'Internal server error');
   }
 };
 
 // Get all expenses for a given user
 const getAllExpensesWithId = async (req, res) => {
-  const { user_id, year, month } = req.query;
+  const { user_id: userId, year, month } = req.query;
 
   // Parameters validation
-  if (!month || !year || !user_id) {
+  if (!month || !year || !userId) {
     sendErrorResponse(
       res,
       400,
-      "fail",
-      "Please provide all the required parameters"
+      'fail',
+      'Please provide all the required parameters'
     );
     return;
   }
@@ -162,28 +170,28 @@ const getAllExpensesWithId = async (req, res) => {
     sendErrorResponse(
       res,
       400,
-      "fail",
-      "Invalid date given, please provide a valid date"
+      'fail',
+      'Invalid date given, please provide a valid date'
     );
     return;
   }
 
   // Check if the user exists
-  if (!(await isValidUser(user_id, res))) {
+  if (!(await isValidUser(userId, res))) {
     return;
   }
 
   try {
     // Find the documents in MongoDB
-    const expenses = await Expense.find({ month, year, user_id });
+    const expenses = await Expense.find({ month, year, user_id: userId });
 
     // Check if there are any expenses for the specified user
     if (expenses.length === 0) {
       sendErrorResponse(
         res,
         404,
-        "fail",
-        "There are no expenses for the specified user."
+        'fail',
+        'There are no expenses for the specified user.'
       );
       return;
     }
@@ -201,7 +209,7 @@ const getAllExpensesWithId = async (req, res) => {
 
     res.status(200).json(report);
   } catch (error) {
-    sendErrorResponse(res, 500, "error", "Internal server error");
+    sendErrorResponse(res, 500, 'error', 'Internal server error');
   }
 };
 
@@ -211,92 +219,91 @@ const removeExpense = async (req, res) => {
     sendErrorResponse(
       res,
       400,
-      "fail",
-      "Please provide all the required parameters"
+      'fail',
+      'Please provide all the required parameters'
     );
     return;
   }
   try {
-    const expense = await Expense.findOne({ id: id });
+    const expense = await Expense.findOne({ id });
     if (!expense) {
       sendErrorResponse(
         res,
         404,
-        "fail",
-        "There is no expense with the specified id."
+        'fail',
+        'There is no expense with the specified id.'
       );
       return;
     }
-    await Expense.deleteOne({ id: id });
+    await Expense.deleteOne({ id });
     res.status(200).json({
-      status: "success",
-      message: `Expense ${id} deleted successfully`,
+      status: 'success',
+      message: `Expense ${id} deleted successfully`
     });
   } catch (error) {
-    sendErrorResponse(res, 500, "error", "Internal server error");
+    sendErrorResponse(res, 500, 'error', 'Internal server error');
   }
 };
 
 const createUser = async (req, res) => {
-  const { id, first_name, last_name, birthday } = req.body;
-  if (!id || !first_name || !last_name || !birthday) {
+  const { id, first_name: firstName, last_name: lastName, birthday } = req.body;
+  if (!id || !firstName || !lastName || !birthday) {
     sendErrorResponse(
       res,
       400,
-      "fail",
-      "Please provide all the required fields"
+      'fail',
+      'Please provide all the required fields'
     );
     return;
   }
   try {
     const user = await User.create({
-      id: id,
-      first_name: first_name,
-      last_name: last_name,
-      birthday: birthday,
+      id,
+      first_name: firstName,
+      last_name: lastName,
+      birthday
     });
     user.save();
     res.status(201).json({
       id: user.id,
       first_name: user.first_name,
       last_name: user.last_name,
-      birthday: user.birthday,
+      birthday: user.birthday
     });
   } catch (error) {
-    sendErrorResponse(res, 500, "error", "Internal server error");
+    sendErrorResponse(res, 500, 'error', 'Internal server error');
   }
 };
 
 const removeReport = async (req, res) => {
-  const { user_id, year, month } = req.body;
-  if (!user_id || !year || !month) {
+  const { user_id: userId, year, month } = req.body;
+  if (!userId || !year || !month) {
     sendErrorResponse(
       res,
       400,
-      "fail",
-      "Please provide all the required parameters"
+      'fail',
+      'Please provide all the required parameters'
     );
     return;
   }
   try {
-    const report = await Report.findOne({ user_id, year, month });
+    const report = await Report.findOne({ user_id: userId, year, month });
     if (!report) {
       sendErrorResponse(
         res,
         404,
-        "fail",
-        "There is no report with the specified parameters."
+        'fail',
+        'There is no report with the specified parameters.'
       );
-      return;
     } else {
-      await Report.deleteOne({ user_id, year, month });
+      await Report.deleteOne({ user_id: userId, year, month });
       res.status(200).json({
-        status: "success",
-        message: `Report for ${user_id} at month ${month} and year ${year} deleted successfully`,
+        status: 'success',
+        message: `Report for ${userId} at month ${month} and year ${year} deleted successfully`
       });
     }
   } catch (error) {
-    sendErrorResponse(res, 500, "error", "Internal server error");
+    sendErrorResponse(res, 500, 'error', 'Internal server error');
   }
 };
 
@@ -306,29 +313,29 @@ const removeUser = async (req, res) => {
     sendErrorResponse(
       res,
       400,
-      "fail",
-      "Please provide all the required parameters"
+      'fail',
+      'Please provide all the required parameters'
     );
     return;
   }
   try {
-    const user = await User.findOne({ id: id });
+    const user = await User.findOne({ id });
     if (!user) {
       sendErrorResponse(
         res,
         404,
-        "fail",
-        "There is no user with the specified id."
+        'fail',
+        'There is no user with the specified id.'
       );
       return;
     }
-    await User.deleteOne({ id: id });
+    await User.deleteOne({ id });
     res.status(200).json({
-      status: "success",
-      message: `User ${id} deleted successfully`,
+      status: 'success',
+      message: `User ${id} deleted successfully`
     });
   } catch (error) {
-    sendErrorResponse(res, 500, "error", "Internal server error");
+    sendErrorResponse(res, 500, 'error', 'Internal server error');
   }
 };
 
@@ -339,5 +346,5 @@ module.exports = {
   removeExpense,
   createUser,
   removeUser,
-  removeReport,
+  removeReport
 };
