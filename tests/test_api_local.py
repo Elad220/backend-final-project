@@ -36,7 +36,7 @@ def setup_teardown():
 
     # Teardown
     global id
-    url = f"{BASE_URL}/report-id?user_id={user_data['id']}&year={expense_data['year']}&month={expense_data['month']}"
+    url = f"{BASE_URL}/report?user_id={user_data['id']}&year={expense_data['year']}&month={expense_data['month']}"
     response = requests.get(url)
     assert response.status_code == 200
     response = requests.delete(f"{BASE_URL}/removecost", json={"id": id})

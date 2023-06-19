@@ -38,6 +38,7 @@ const removeUsers = async (req, res) => {
 // remove all expenses from the database
 const removeExpenses = async (req, res) => {
   try {
+    await Report.deleteMany({});
     await Cost.deleteMany({});
     res.status(200).json({
       status: 'success',

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Define the schema for counters collection
 const counterSchema = new mongoose.Schema({
   model: {
     type: String,

@@ -5,6 +5,7 @@ const isValidDate = require('../utils/is-valid-date');
 const isValidUser = require('../utils/is-valid-user');
 const getOrCreateReport = require('../utils/get-or-create-report');
 
+// Valid categories for expenses
 const validCategories = [
   'food',
   'health',
@@ -81,6 +82,7 @@ const addExpense = async (req, res) => {
       // Delete the corresponding report
       await Report.deleteOne({ user_id: userId, year, month });
 
+      // Send response
       res.status(201).json({
         id: expense.id,
         user_id: expense.user_id,
@@ -91,6 +93,7 @@ const addExpense = async (req, res) => {
         category: expense.category,
         sum: expense.sum
       });
+      // Send error response
     } else {
       sendErrorResponse(
         res,
@@ -99,6 +102,7 @@ const addExpense = async (req, res) => {
         'Could not create expense, please try again later'
       );
     }
+    // Send error response
   } catch (error) {
     console.log(error);
     sendErrorResponse(res, 500, 'error', 'Internal server error');
@@ -135,7 +139,7 @@ const getAllExpenses = async (req, res) => {
   if (!(await isValidUser(userId, res))) {
     return;
   }
-
+  // Generate report if one doesn't exist
   try {
     const report = await getOrCreateReport(
       userId,
@@ -150,69 +154,7 @@ const getAllExpenses = async (req, res) => {
   }
 };
 
-// Get all expenses for a given user
-const getAllExpensesWithId = async (req, res) => {
-  const { user_id: userId, year, month } = req.query;
-
-  // Parameters validation
-  if (!month || !year || !userId) {
-    sendErrorResponse(
-      res,
-      400,
-      'fail',
-      'Please provide all the required parameters'
-    );
-    return;
-  }
-
-  // Check if the date is valid
-  if (month < 1 || month > 12 || year < 0) {
-    sendErrorResponse(
-      res,
-      400,
-      'fail',
-      'Invalid date given, please provide a valid date'
-    );
-    return;
-  }
-
-  // Check if the user exists
-  if (!(await isValidUser(userId, res))) {
-    return;
-  }
-
-  try {
-    // Find the documents in MongoDB
-    const expenses = await Expense.find({ month, year, user_id: userId });
-
-    // Check if there are any expenses for the specified user
-    if (expenses.length === 0) {
-      sendErrorResponse(
-        res,
-        404,
-        'fail',
-        'There are no expenses for the specified user.'
-      );
-      return;
-    }
-
-    const report = validCategories.reduce(
-      (acc, category) => ({ ...acc, [category]: [] }),
-      {}
-    );
-
-    // Format the returned document
-    expenses.forEach((expense) => {
-      const { day, description, sum, category, id } = expense;
-      report[category].push({ day, description, sum, id });
-    });
-
-    res.status(200).json(report);
-  } catch (error) {
-    sendErrorResponse(res, 500, 'error', 'Internal server error');
-  }
-};
-
+// Remove a single expense
 const removeExpense = async (req, res) => {
   const { id } = req.body;
   if (!id) {
@@ -224,6 +166,7 @@ const removeExpense = async (req, res) => {
     );
     return;
   }
+  // Check if the expense exists
   try {
     const expense = await Expense.findOne({ id });
     if (!expense) {
@@ -235,6 +178,7 @@ const removeExpense = async (req, res) => {
       );
       return;
     }
+    // Delete the expense
     await Expense.deleteOne({ id });
     res.status(200).json({
       status: 'success',
@@ -245,6 +189,7 @@ const removeExpense = async (req, res) => {
   }
 };
 
+// Create a new user
 const createUser = async (req, res) => {
   const { id, first_name: firstName, last_name: lastName, birthday } = req.body;
   if (!id || !firstName || !lastName || !birthday) {
@@ -256,6 +201,7 @@ const createUser = async (req, res) => {
     );
     return;
   }
+  // Create user
   try {
     const user = await User.create({
       id,
@@ -275,6 +221,7 @@ const createUser = async (req, res) => {
   }
 };
 
+// Remove a report
 const removeReport = async (req, res) => {
   const { user_id: userId, year, month } = req.body;
   if (!userId || !year || !month) {
@@ -286,6 +233,7 @@ const removeReport = async (req, res) => {
     );
     return;
   }
+  // Check if the report exists
   try {
     const report = await Report.findOne({ user_id: userId, year, month });
     if (!report) {
@@ -307,6 +255,7 @@ const removeReport = async (req, res) => {
   }
 };
 
+// Remove a user
 const removeUser = async (req, res) => {
   const { id } = req.body;
   if (!id) {
@@ -318,6 +267,7 @@ const removeUser = async (req, res) => {
     );
     return;
   }
+  // Check if the user exists
   try {
     const user = await User.findOne({ id });
     if (!user) {
@@ -329,6 +279,7 @@ const removeUser = async (req, res) => {
       );
       return;
     }
+    // Delete the user
     await User.deleteOne({ id });
     res.status(200).json({
       status: 'success',
@@ -342,7 +293,6 @@ const removeUser = async (req, res) => {
 module.exports = {
   addExpense,
   getAllExpenses,
-  getAllExpensesWithId,
   removeExpense,
   createUser,
   removeUser,

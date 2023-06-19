@@ -4,7 +4,6 @@ const router = express.Router();
 const {
   addExpense,
   getAllExpenses,
-  getAllExpensesWithId,
   removeExpense,
   createUser,
   removeUser,
@@ -35,7 +34,6 @@ const developers = [
 
 // setup the routes for the app
 router.get('/report', getAllExpenses);
-router.get('/report-id', getAllExpensesWithId);
 router.post('/addcost', addExpense);
 router.post('/adduser', createUser);
 router.get('/about', (req, res) => {
