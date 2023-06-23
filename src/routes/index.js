@@ -33,10 +33,10 @@ const developers = [
 ];
 
 // setup the routes for the app
-router.get('/report', getAllExpenses);
-router.post('/addcost', addExpense);
+router.get('/report/', getAllExpenses);
+router.post('/addcost/', addExpense);
 router.post('/adduser', createUser);
-router.get('/about', (req, res) => {
+router.get('/about/', (req, res) => {
   res.json(developers);
 });
 router.delete('/removeuser', removeUser);
