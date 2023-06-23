@@ -39,9 +39,6 @@ router.post('/adduser', createUser);
 router.get('/about', (req, res) => {
   res.json(developers);
 });
-router.get('/about/', (req, res) => {
-  res.json(developers);
-});
 router.delete('/removeuser', removeUser);
 router.delete('/removereport', removeReport);
 router.delete('/removecost', removeExpense);
